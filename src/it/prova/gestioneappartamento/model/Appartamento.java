@@ -1,6 +1,7 @@
 package it.prova.gestioneappartamento.model;
 
 import java.sql.Date;
+import java.util.Objects;
 
 public class Appartamento {
 	private Long id;
@@ -8,7 +9,7 @@ public class Appartamento {
 	private int metriQuadri;
 	private int prezzo;
 	private Date dataCostruzione;
-	
+
 	public Appartamento() {
 	}
 
@@ -66,6 +67,19 @@ public class Appartamento {
 	public void setDataCostruzione(Date dataCostruzione) {
 		this.dataCostruzione = dataCostruzione;
 	}
-	
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Appartamento other = (Appartamento) obj;
+		return Objects.equals(dataCostruzione, other.dataCostruzione) && Objects.equals(id, other.id)
+				&& metriQuadri == other.metriQuadri && prezzo == other.prezzo
+				&& Objects.equals(quartiere, other.quartiere);
+	}
+
 }

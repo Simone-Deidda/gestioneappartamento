@@ -3,6 +3,7 @@ package it.prova.gestioneappartamento.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class AppartamentoDAO {
 		try (Connection c = MyConnection.getConnection();
 				PreparedStatement ps = c.prepareStatement(
 						"INSERT INTO appartamento (quartiere, prezzo, metriquadri, datacostruzione) VALUES (?, ?, ?, ?);")) {
-			
+
 			ps.setString(1, input.getQuartiere());
 			ps.setInt(2, input.getPrezzo());
 			ps.setInt(3, input.getMetriQuadri());
@@ -70,7 +71,7 @@ public class AppartamentoDAO {
 		try (Connection c = MyConnection.getConnection();
 				PreparedStatement ps = c.prepareStatement(
 						"UPDATE appartamento SET quartiere = ?, prezzo = ?, metriquadri = ?, datacostruzione = ? WHERE id = ?;")) {
-			
+
 			ps.setString(1, input.getQuartiere());
 			ps.setInt(2, input.getPrezzo());
 			ps.setInt(3, input.getMetriQuadri());
@@ -85,4 +86,58 @@ public class AppartamentoDAO {
 		return result;
 	}
 
+	public int delete(Long input) {
+		if (input < 1) {
+			throw new RuntimeException("Impossibile modificare Appartamento: Dati inseriti mancanti o incorretti!");
+		}
+
+		int result = 0;
+		try (Connection c = MyConnection.getConnection();
+				PreparedStatement ps = c.prepareStatement("DELETE FROM appartamento WHERE id = ?;")) {
+
+			ps.setLong(1, input);
+			result = ps.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		return result;
+	}
+
+	public Appartamento findById(Long idInput) {
+		if (idInput < 1)
+			throw new RuntimeException("Impossibile caricare Appartamento: id mancante o incorretto!");
+
+		Appartamento result = null;
+
+		try (Connection c = MyConnection.getConnection();
+				PreparedStatement ps = c.prepareStatement("SELECT * FROM appartamento WHERE id = ?")) {
+
+			ps.setLong(1, idInput);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					result = new Appartamento();
+					result.setId(rs.getLong("id"));
+					result.setQuartiere(rs.getString("quartiere"));
+					result.setPrezzo(rs.getInt("prezzo"));
+					result.setDataCostruzione(rs.getDate("datacostruzione"));
+					result.setMetriQuadri(rs.getInt("metriquadri"));
+				} else {
+					result = null;
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+			return result;
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+
+	}
 }
