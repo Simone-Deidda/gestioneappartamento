@@ -133,11 +133,81 @@ public class AppartamentoDAO {
 				throw new RuntimeException(e);
 			}
 			return result;
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 
 	}
+
+	public List<Appartamento> findByExample(Appartamento example) {
+		List<Appartamento> result = null;
+
+		String query = "SELECT * FROM appartamento";
+		if (example != null && example.everythingIsNotInitialized()) {
+			query += " WHERE quartiere LIKE ?";
+
+			if (example.prezzoIsZero())
+				query += " AND prezzo > 0";
+			else
+				query += " AND prezzo = ?";
+
+			if (example.metriQuadriIsZero())
+				query += " AND metriquadri > 0";
+			else
+				query += " AND metriquadri = ?";
+
+			if (example.dataCostruzioneIsNull())
+				query += " AND datacostruzione > '0000-01-01'";
+			else
+				query += " AND datacostruzione = ?";
+		}
+		
+		try (Connection c = MyConnection.getConnection(); PreparedStatement ps = c.prepareStatement(query)) {
+			int index = 1;
+
+			if (example != null && example.everythingIsNotInitialized()) {
+				if (example.quartiereIsNull()) {
+					ps.setString(index, "%");
+					index++;
+				} else {
+					ps.setString(index, example.getQuartiere() + "%");
+					index++;
+				}
+
+				if (!example.prezzoIsZero()) {
+					ps.setInt(index, example.getPrezzo());
+					index++;
+				}
+
+				if (!example.metriQuadriIsZero()) {
+					ps.setInt(index, example.getMetriQuadri());
+					index++;
+				}
+
+				if (!example.dataCostruzioneIsNull())
+					ps.setDate(index, example.getDataCostruzione());
+			}
+			try (ResultSet rs = ps.executeQuery()) {
+				result = new ArrayList<Appartamento>();
+
+				while (rs.next()) {
+					Appartamento appartamentoTmp = new Appartamento();
+					appartamentoTmp.setId(rs.getLong("id"));
+					appartamentoTmp.setQuartiere(rs.getString("quartiere"));
+					appartamentoTmp.setPrezzo(rs.getInt("prezzo"));
+					appartamentoTmp.setDataCostruzione(rs.getDate("datacostruzione"));
+					appartamentoTmp.setMetriQuadri(rs.getInt("metriquadri"));
+					result.add(appartamentoTmp);
+				}
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		return result;
+
+	}
+
 }

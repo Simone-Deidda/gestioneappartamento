@@ -9,7 +9,7 @@ public class Appartamento {
 	private int metriQuadri;
 	private int prezzo;
 	private Date dataCostruzione;
-
+	
 	public Appartamento() {
 	}
 
@@ -27,7 +27,27 @@ public class Appartamento {
 		this.prezzo = prezzo;
 		this.dataCostruzione = dataCostruzione;
 	}
+	
+	public boolean everythingIsNotInitialized() {
+		return dataCostruzioneIsNull() && prezzoIsZero() && dataCostruzioneIsNull() && metriQuadriIsZero();
+	}
+	
+	public boolean dataCostruzioneIsNull() {
+		return this.dataCostruzione == null;
+	}
 
+	public boolean prezzoIsZero() {
+		return this.prezzo == 0;
+	}
+
+	public boolean metriQuadriIsZero() {
+		return this.metriQuadri == 0;
+	}
+
+	public boolean quartiereIsNull() {
+		return this.quartiere == null || this.quartiere.isEmpty();
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -80,6 +100,12 @@ public class Appartamento {
 		return Objects.equals(dataCostruzione, other.dataCostruzione) && Objects.equals(id, other.id)
 				&& metriQuadri == other.metriQuadri && prezzo == other.prezzo
 				&& Objects.equals(quartiere, other.quartiere);
+	}
+
+	@Override
+	public String toString() {
+		return "Appartamento [id=" + id + ", quartiere=" + quartiere + ", metriQuadri=" + metriQuadri + ", prezzo="
+				+ prezzo + ", dataCostruzione=" + dataCostruzione + "]";
 	}
 
 }

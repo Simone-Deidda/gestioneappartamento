@@ -23,6 +23,20 @@ public class TestAppartamento {
 
 		testCercaAppartamentoPerId(appartamentoDAOInstance);
 		System.out.println("Attualmente nel DB ci sono: " + appartamentoDAOInstance.list().size() + " elementi");
+		
+		System.out.println("Example = null:");
+		Appartamento appartamento = null;
+		testCercaAppartamentoPerExample(appartamentoDAOInstance, appartamento);
+		
+		System.out.println("Example with quartiere = (Ga):");
+		appartamento = new Appartamento();
+		appartamento.setQuartiere("Ga");
+		testCercaAppartamentoPerExample(appartamentoDAOInstance, appartamento);
+		
+		System.out.println("Example with metriquadri = 30:");
+		appartamento.setQuartiere(null);
+		appartamento.setMetriQuadri(30);
+		testCercaAppartamentoPerExample(appartamentoDAOInstance, appartamento);
 	}
 
 	public static void testInserimentoAppartamenti(AppartamentoDAO appartamentoDAOInstance) {
@@ -82,6 +96,24 @@ public class TestAppartamento {
 			throw new RuntimeException("testCercaAppartamentoPerId : FAILED");
 
 		System.out.println("<<<<testCercaAppartamentoPerId: PASSED>>>>\n");
+	}
+
+	public static void testCercaAppartamentoPerExample(AppartamentoDAO appartamentoDAOInstance, Appartamento example) {
+		if (appartamentoDAOInstance.list().size() < 1) {
+			System.out.println("Database vuoto o connessione fallita!");
+			throw new RuntimeException("testCercaAppartamentoPerExample : FAILED");
+		}
+
+		List<Appartamento> listaAppartamentiTrovati = appartamentoDAOInstance.findByExample(example);
+		
+		if (listaAppartamentiTrovati == null)
+			throw new RuntimeException("testCercaAppartamentoPerExample : FAILED");
+
+		for (Appartamento appartamento : listaAppartamentiTrovati) {
+			System.out.println(appartamento);
+		}
+		
+		System.out.println("<<<<testCercaAppartamentoPerExample: PASSED>>>>\n");
 	}
 
 }
